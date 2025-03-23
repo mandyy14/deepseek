@@ -1,6 +1,7 @@
 "use client"; // use client é uma diretiva que indica que o código deve ser executado no lado do cliente
 
 import { assets } from "@/assets/assets";
+import PromptBox from "@/components/promptBox";
 import SideBar from "@/components/sideBar";
 import Image from "next/image";
 import { useState } from "react";
@@ -35,12 +36,10 @@ function Home() {
           ) : (
             <div></div>
           )}
-
-          {
-            <p className="absolute bottom-1 text-xs text-gray-500">
-              AI-generated, for reference only
-            </p>
-          }
+          <PromptBox isLoading={isLoading} setIsLoading={setIsLoading} />
+          <p className="absolute bottom-1 text-xs text-gray-500">
+            AI-generated, for reference only
+          </p>
         </div>
       </div>
     </div>

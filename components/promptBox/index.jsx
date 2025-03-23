@@ -1,6 +1,8 @@
 import { assets } from "@/assets/assets";
+import Image from "next/image";
+import { useState } from "react";
 
-function PromptBox() {
+function PromptBox({ isLoading, setIsLoading }) {
   const [prompt, setPrompt] = useState("");
   return (
     <form
@@ -30,10 +32,14 @@ function PromptBox() {
         </div>
         <div className="flex items-center gap-2">
           <Image src={assets.pin_icon} className="w-4 cursor-pointer" alt="" />
-          <button>
+          <button
+            className={`${
+              prompt ? "bg-primary" : "bg-[#71717a]"
+            } rounded-full p-2 cursor-pointer`}
+          >
             <Image
-              src={assets.pin_icon}
-              className="w-4 cursor-pointer"
+              src={prompt ? assets.arrow_icon : assets.arrow_icon_dull}
+              className="w-3.5 aspect-square"
               alt=""
             />
           </button>

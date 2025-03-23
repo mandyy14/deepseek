@@ -1,6 +1,7 @@
 "use client"; // use client é uma diretiva que indica que o código deve ser executado no lado do cliente
 
 import { assets } from "@/assets/assets";
+import Message from "@/components/message";
 import PromptBox from "@/components/promptBox";
 import SideBar from "@/components/sideBar";
 import Image from "next/image";
@@ -34,7 +35,9 @@ function Home() {
               <p className="text-sm mt-4">How can I help you today?</p>
             </>
           ) : (
-            <div></div>
+            <div>
+              <Message role="user" content="What is next js" />
+            </div>
           )}
           <PromptBox isLoading={isLoading} setIsLoading={setIsLoading} />
           <p className="absolute bottom-1 text-xs text-gray-500">

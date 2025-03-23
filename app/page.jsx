@@ -35,6 +35,7 @@ function Home() {
           ) : (
             <div></div>
           )}
+
           {
             <p className="absolute bottom-1 text-xs text-gray-500">
               AI-generated, for reference only

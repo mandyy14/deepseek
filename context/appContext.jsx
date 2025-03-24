@@ -7,22 +7,23 @@ import toast from "react-hot-toast";
 
 export const AppContext = createContext();
 
-export const useAppContext = () => {
-  return useContext(AppContext);
-};
+export const useAppContext = () => useContext(AppContext);
 
-export const AppContextProvider = ({ children }) => {
-  const { user } = useUser();
-  const { getToken } = useAuth();
+const AppContextProvider = ({ children }) => {
+  const { isLoaded: isUserLoaded, user } = useUser();
+  const { isLoaded: isAuthLoaded, getToken } = useAuth();
 
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
 
+  const isReady = isUserLoaded && isAuthLoaded;
+
   const createNewChat = async () => {
     try {
-      if (!user) return null;
+      if (!user) return;
+
       const token = await getToken();
-      const { data } = await axios.post(
+      await axios.post(
         "/api/chat/create",
         {},
         {
@@ -31,17 +32,9 @@ export const AppContextProvider = ({ children }) => {
           },
         }
       );
-
-      if (data.success && data.chat) {
-        setChats((prev) => [...prev, data.chat]);
-        return data.chat;
-      } else {
-        toast.error(data.message || "Failed to create chat");
-      }
-
-      fetchUsersChats(); //
+      await fetchUsersChats();
     } catch (error) {
-      toast.error(error.message || "Error creating chat");
+      toast.error(error.message || "Erro ao criar novo chat");
     }
   };
 
@@ -52,30 +45,22 @@ export const AppContextProvider = ({ children }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log("Fetched chats:", data.chats);
-
       if (data.success) {
-        setChats(data.data);
+        const sortedChats = [...data.data].sort(
+          (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+        );
 
-        //if the user has no chats, create a new chat
-        if (data.data.length === 0) {
+        setChats(sortedChats);
+        setSelectedChat(sortedChats[0] || null);
+
+        if (sortedChats.length === 0) {
           await createNewChat();
-          return fetchUsersChats();
-        } else {
-          //sort chats by updated date
-          data.data.sort((a, b) => {
-            return new Date(b.updatedAt) - new Date(a.updatedAt);
-          });
-
-          //set recently updated chat as selected chat
-          setSelectedChat(data.data[0]);
-          console.log("Selected chat:", data.data[0]);
         }
       } else {
-        toast.error(data.message);
+        toast.error(data.message || "Erro ao buscar chats");
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message || "Erro ao buscar chats");
     }
   };
 
@@ -95,5 +80,15 @@ export const AppContextProvider = ({ children }) => {
     createNewChat,
   };
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={value}>
+      {isReady ? (
+        children
+      ) : (
+        <div className="text-white text-center p-4">Carregando...</div>
+      )}
+    </AppContext.Provider>
+  );
 };
+
+export default AppContextProvider;

@@ -55,7 +55,7 @@ function PromptBox({ isLoading, setIsLoading }) {
       });
 
       if (data.success) {
-        const message = data.data;
+        const message = data.data.content;
         const messageTokens = message.split(" ");
 
         let assistantMessage = {
@@ -85,18 +85,6 @@ function PromptBox({ isLoading, setIsLoading }) {
             });
           }, i * 100);
         }
-
-        // Adiciona mensagem final também no array de chats
-        setChats((prevChats) =>
-          prevChats.map((chat) =>
-            chat._id === selectedChat._id
-              ? {
-                  ...chat,
-                  messages: [...chat.messages, data.data],
-                }
-              : chat
-          )
-        );
       } else {
         toast.error(data.message);
         setPrompt(promptCopy);
@@ -113,7 +101,7 @@ function PromptBox({ isLoading, setIsLoading }) {
     <form
       onSubmit={sendPrompt}
       className={`w-full ${
-        selectedChat.messages.length > 0 ? "max-w-3xl" : "max-w-2xl"
+        selectedChat?.messages?.length > 0 ? "max-w-3xl" : "max-w-2xl"
       } bg-[#404045] p-4 rounded-3xl mt-4 transition-all`}
     >
       <textarea

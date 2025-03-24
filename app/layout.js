@@ -1,4 +1,4 @@
-import { AppContextProvider } from "@/context/appContext";
+import AppContextProvider from "@/context/appContext";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
@@ -11,16 +11,16 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "DeepSeak",
+  title: "DeepSeek",
   description: "DeepSeek Project.",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider>
-      <AppContextProvider>
-        <html lang="en">
-          <body className={`${inter.className}  antialiased`}>
+    <html lang="en">
+      <body className={`${inter.className} antialiased`}>
+        <ClerkProvider>
+          <AppContextProvider>
             <Toaster
               toastOptions={{
                 success: { style: { background: "black", color: "white" } },
@@ -28,9 +28,9 @@ export default function RootLayout({ children }) {
               }}
             />
             {children}
-          </body>
-        </html>
-      </AppContextProvider>
-    </ClerkProvider>
+          </AppContextProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }

@@ -10,14 +10,14 @@ import { useEffect, useRef, useState } from "react";
 
 function Home() {
   const [expand, setExpand] = useState(false);
-  const [messages, setMassages] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { selectedChat } = useAppContext();
   const containerRef = useRef(null);
 
   useEffect(() => {
     if (selectedChat) {
-      setMassages(selectedChat.messages);
+      setMessages(selectedChat.messages);
     }
   }, [selectedChat]);
 
@@ -59,7 +59,7 @@ function Home() {
 "
             >
               <p className="fixed top-8 border border-transparent hover:border-gray-500 py-1 px-2 rounded-lg font-semibold mb-6">
-                {selectedChat}
+                {selectedChat.name}
               </p>
               {messages.map((msg, index) => (
                 <Message key={index} role={msg.role} content={msg.content} />

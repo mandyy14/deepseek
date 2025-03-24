@@ -1,6 +1,7 @@
 import connectDB from "@/config/db";
 import Chat from "@/models/chat";
 import { getAuth } from "@clerk/nextjs/server";
+import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
@@ -16,13 +17,33 @@ export async function POST(req) {
 
     const { chatId, name } = await req.json();
 
-    // Connect to the database and update the chat name
+    // 🔐 Validação do ID
+    if (!mongoose.Types.ObjectId.isValid(chatId)) {
+      return NextResponse.json({
+        success: false,
+        message: "ID de chat inválido.",
+      });
+    }
+
+    // Conexão com o banco
     await connectDB();
-    await Chat.findOneAndUpdate({ _id: chatId, userId }, { name });
+
+    const updated = await Chat.findOneAndUpdate(
+      { _id: chatId, userId },
+      { name },
+      { new: true }
+    );
+
+    if (!updated) {
+      return NextResponse.json({
+        success: false,
+        message: "Chat não encontrado ou não pertence ao usuário.",
+      });
+    }
 
     return NextResponse.json({
       success: true,
-      message: "Chat renamed successfully",
+      message: "Chat renomeado com sucesso.",
     });
   } catch (error) {
     return NextResponse.json({

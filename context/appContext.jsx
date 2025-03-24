@@ -18,11 +18,11 @@ export const AppContextProvider = ({ children }) => {
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
 
-  const createNewChat = async (name) => {
+  const createNewChat = async () => {
     try {
       if (!user) return null;
       const token = await getToken();
-      await axios.post(
+      const { data } = await axios.post(
         "/api/chat/create",
         {},
         {
@@ -31,55 +31,67 @@ export const AppContextProvider = ({ children }) => {
           },
         }
       );
+
+      if (data.success && data.chat) {
+        setChats((prev) => [...prev, data.chat]);
+        return data.chat;
+      } else {
+        toast.error(data.message || "Failed to create chat");
+      }
+
+      fetchUsersChats(); //
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message || "Error creating chat");
     }
   };
 
-  const fetchUserChats = async () => {
+  const fetchUsersChats = async () => {
     try {
       const token = await getToken();
       const { data } = await axios.get("/api/chat/get", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      fetchUserChats();
+
+      console.log("Fetched chats:", data.chats);
 
       if (data.success) {
-        console.log(data.data);
         setChats(data.data);
 
-        // if the user has no chats, create a new one
+        //if the user has no chats, create a new chat
         if (data.data.length === 0) {
           await createNewChat();
-          return fetchUserChats();
+          return fetchUsersChats();
         } else {
-          // sort chats by updated date
-          const sorted = data.data.sort((a, b) => {
+          //sort chats by updated date
+          data.data.sort((a, b) => {
             return new Date(b.updatedAt) - new Date(a.updatedAt);
           });
-          setSelectedChat(sorted[0]);
-          console.log(sorted[0]);
+
+          //set recently updated chat as selected chat
+          setSelectedChat(data.data[0]);
+          console.log("Selected chat:", data.data[0]);
         }
       } else {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error("Failed to fetch chats");
+      toast.error(error.message);
     }
   };
 
   useEffect(() => {
     if (user) {
-      fetchUserChats();
+      fetchUsersChats();
     }
   }, [user]);
+
   const value = {
     user,
     chats,
-    selectedChat,
     setChats,
+    selectedChat,
     setSelectedChat,
-    fetchUserChats,
+    fetchUsersChats,
     createNewChat,
   };
 

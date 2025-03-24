@@ -1,7 +1,7 @@
 export const maxDuration = 60; //route expires after 60 seconds
 
 import connectDB from "@/config/db";
-import { Chat } from "@/models/chat";
+import Chat from "@/models/chat";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
@@ -33,7 +33,7 @@ export async function POST(req) {
     //Create a user message object
     const userPrompt = {
       role: "user",
-      contenty: prompt,
+      content: prompt,
       timestamp: Date.now(),
     };
 
@@ -58,7 +58,7 @@ export async function POST(req) {
   } catch (error) {
     return NextResponse.json({
       success: false,
-      message: error.message,
+      error: error.message,
     });
   }
 }

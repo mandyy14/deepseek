@@ -1,6 +1,6 @@
 import connectDB from "@/config/db";
 import Chat from "@/models/chat";
-import { getAuth } from "@clerk/nextjs/dist/types/server";
+import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export async function GET(req) {
@@ -14,13 +14,13 @@ export async function GET(req) {
       });
     }
 
-    // Connect to the database and fetch all chats for the user
     await connectDB();
-    const chats = await Chat.find({ userId });
+
+    const data = await Chat.find({ userId });
 
     return NextResponse.json({
       success: true,
-      chats,
+      data,
     });
   } catch (error) {
     return NextResponse.json({

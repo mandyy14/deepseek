@@ -1,4 +1,4 @@
-import MaintenancePage from "@/components/MaintenancePage"; // importe aqui
+import MaintenancePage from "@/components/maintanance";
 import AppContextProvider from "@/context/appContext";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";

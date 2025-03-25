@@ -1,3 +1,4 @@
+import MaintenancePage from "@/components/MaintenancePage"; // importe aqui
 import AppContextProvider from "@/context/appContext";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
@@ -9,6 +10,8 @@ const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
 });
+
+const isMaintenance = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === "true";
 
 export const metadata = {
   title: "DeepSeek",
@@ -27,7 +30,7 @@ export default function RootLayout({ children }) {
                 error: { style: { background: "black", color: "white" } },
               }}
             />
-            {children}
+            {isMaintenance ? <MaintenancePage /> : children}
           </AppContextProvider>
         </ClerkProvider>
       </body>
